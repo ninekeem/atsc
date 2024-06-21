@@ -1,0 +1,10 @@
+#jinja2:lstrip_blocks: True
+  
+{% for host in groups ['all'] %}
+Host {{ hostname_tld }}_{{ host }}
+	Hostname {{ hostvars[host]['ansible_host'] }}
+	IdentityFile {{ ansible_ssh_key }}
+	Port {{ hostvars[host]['ansible_port'] }}
+	User {{ ansible_user }}
+
+{% endfor %} 

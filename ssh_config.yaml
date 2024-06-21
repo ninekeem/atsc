@@ -1,0 +1,30 @@
+- hosts: 127.0.0.1
+  connection: local
+  name: Ansible To SSH Config
+  gather_facts: false
+  become: false
+  vars:
+    ansible_user: "{{ lookup('ansible.builtin.env', 'USER') }}"
+    atsc_path: '~/.ssh/config'
+    ansible_ssh_key: '~/.ssh/id_ed25519'
+  tasks:
+  - name: Print variables
+    debug:
+      msg:
+      - "ansible_user: {{ ansible_user }}"
+      - "atsc_path: {{ atsc_path }}"
+      - "ansible_ssh_key: {{ ansible_ssh_key }}"
+
+  - name: Check atsc_confirm
+    debug:
+      msg:
+      - "if printed above variables seems good for you, add -e atsc_confirm=true"
+      - "ansible-playbook ... -e atsc_confirm=true ... to continue."
+    failed_when: atsc_confirm != "true"
+
+  - name: Generate configs
+    delegate_to: localhost
+    template:
+      src: templates/ssh_template.j2
+      dest: "{{ atsc_path | default('~/.ssh/config') }}"
+      mode: 0600
